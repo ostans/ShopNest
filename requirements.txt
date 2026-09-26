@@ -1,0 +1,10 @@
+argcomplete==3.7.2
+asgiref==3.12.1
+Django==6.1
+django-unfold==0.104.1
+pillow==12.3.0
+pipx==1.16.7
+psycopg2-binary==2.9.12
+python-decouple==3.8
+sqlparse==0.6.0
+userpath==1.9.2
