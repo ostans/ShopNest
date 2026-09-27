@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ site_name }} | Dashboard
+{% endblock %}
+
+{% block content %}
+  <section class="dashboard-page">
+    <div class="dashboard-shell">
+      <div class="dashboard-card card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="dashboard-title">Customer Dashboard</h1>
+          <p class="dashboard-subtitle">Welcome to your dashboard, {{ request.user.full_name }}!</p>
+
+          <div class="row g-4 mt-3">
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm bg-light">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Account Overview</h5>
+                    <span class="badge bg-primary rounded-pill">Customer</span>
+                  </div>
+                  <div class="mb-2">
+                    <small class="text-muted d-block">Address</small>
+                    <strong>{{ profile.address|default:'No address added yet' }}</strong>
+                  </div>
+                  <div>
+                    <small class="text-muted d-block">Balance</small>
+                    <strong>{{ profile.balance|floatformat:2 }} $</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm bg-light">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">Quick Actions</h5>
+                  <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                      <a href="#" class="btn btn-outline-secondary w-100 h-100 py-3">Orders</a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <a href="{% url 'become-seller' %}" class="btn btn-outline-success w-100 h-100 py-3">
+                        {% if request.user.seller_profile %}
+                          Seller Dashboard
+                        {% else %}
+                          Become Seller
+                        {% endif %}
+                      </a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 h-100 py-3">Logout</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

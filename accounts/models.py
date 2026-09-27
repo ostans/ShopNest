@@ -59,9 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    role = models.CharField(
-        max_length=11, choices=Role.choices, default=Role.PARTICIPANT
-    )
+    role = models.CharField(max_length=11, choices=Role.choices, default=Role.CUSTOMER)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -85,7 +83,7 @@ class CustomerProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="customer_profile",
     )
-    adderess = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -103,7 +101,7 @@ class SellerProfile(models.Model):
     national_id = models.CharField(max_length=10, unique=True)
     logo = models.ImageField(upload_to="sellers/logos/", blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    adderess = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

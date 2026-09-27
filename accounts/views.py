@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import BaseRegisterForm, SellerRegisterForm, LoginForm
+from .forms import BaseRegisterForm, BecomeSellerForm, LoginForm, SellerRegisterForm
 from .models import SellerProfile
 
 
@@ -37,14 +37,16 @@ def seller_register_view(request):
                 national_id=form.cleaned_data["national_id"],
                 bio=form.cleaned_data["bio"],
             )
-            login(request=user)
+            user.role = "seller"
+            user.save(update_fields=["role"])
+            login(request, user)
             messages.success(request, "You have successfully registered as seller")
-            return redirect("seller_dashboard")
+            return redirect("seller-dashboard")
         else:
             messages.error(request, "Registration failed", extra_tags="danger")
     else:
         form = SellerRegisterForm()
-    return render(request, "accounts/seller_register.html", {"form": form})
+    return render(request, "accounts/register.html", {"form": form})
 
 
 def login_view(request):
@@ -54,7 +56,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, "You have successfully logged in")
-            return redirect("home")
+            return redirect("customer-dashboard")
         else:
             messages.error(request, "Invalid phone number or password")
     else:
@@ -75,12 +77,42 @@ def customer_dashboard_view(request):
 
 
 @login_required
+def become_seller_view(request):
+    if request.user.role == "seller":
+        return redirect("seller-dashboard")
+
+    if request.method == "POST":
+        form = BecomeSellerForm(request.POST)
+        if form.is_valid():
+            seller_profile, created = SellerProfile.objects.get_or_create(
+                user=request.user
+            )
+            seller_profile.national_id = form.cleaned_data["national_id"]
+            seller_profile.address = form.cleaned_data["address"]
+            seller_profile.bio = form.cleaned_data["bio"]
+            seller_profile.save()
+
+            request.user.role = "seller"
+            request.user.save(update_fields=["role"])
+
+            messages.success(request, "You have successfully become a seller.")
+            return redirect("seller-dashboard")
+    else:
+        form = BecomeSellerForm()
+
+    return render(request, "accounts/become_seller.html", {"form": form})
+
+
+@login_required
 def seller_dashboard_view(request):
-    profile = request.user.seller_profile
+    profile = getattr(request.user, "seller_profile", None)
     if not profile:
         messages.error(request, "You are not a seller", extra_tags="danger")
-        return redirect("seller-register")
-    stores = profile.stores.all()
+        return redirect("become-seller")
+
+    stores = profile.stores.all() if hasattr(profile, "stores") else []
     return render(
-        request, "accounts/seller_dahboard.html", {"profile": profile, "stores": stores}
+        request,
+        "accounts/seller_dahboard.html",
+        {"profile": profile, "stores": stores, "user": request.user},
     )

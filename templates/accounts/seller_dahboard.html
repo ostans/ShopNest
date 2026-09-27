@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ site_name }} | Seller Dashboard
+{% endblock %}
+
+{% block content %}
+  <section class="dashboard-page">
+    <div class="dashboard-shell">
+      <div class="dashboard-card card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="dashboard-title">Seller Dashboard</h1>
+          <p class="dashboard-subtitle">Welcome back, {{ user.full_name }}!</p>
+
+          <div class="row g-4 mt-3">
+            <div class="col-12 col-lg-6">
+              <div class="card h-100 border-0 shadow-sm bg-light">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Seller Overview</h5>
+                    <span class="badge bg-success rounded-pill">Seller</span>
+                  </div>
+
+                  <div class="mb-3">
+                    <small class="text-muted d-block">National ID</small>
+                    <strong>{{ profile.national_id|default:'Not provided' }}</strong>
+                  </div>
+
+                  <div class="mb-3">
+                    <small class="text-muted d-block">Business Address</small>
+                    <strong>{{ profile.address|default:'No business address added yet' }}</strong>
+                  </div>
+
+                  <div class="mb-3">
+                    <small class="text-muted d-block">Balance</small>
+                    <strong>{{ profile.balance|floatformat:2 }} $</strong>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block">Bio</small>
+                    <strong>{{ profile.bio|default:'No bio added yet' }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <div class="card h-100 border-0 shadow-sm bg-light">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">Quick Actions</h5>
+                  <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                      <a href="#" class="btn btn-outline-primary w-100 h-100 py-3">Profile</a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <a href="#" class="btn btn-outline-secondary w-100 h-100 py-3">Orders</a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <a href="#" class="btn btn-outline-info w-100 h-100 py-3">Stores</a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 h-100 py-3">Logout</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3 class="mb-0">My Stores</h3>
+              <span class="badge bg-primary rounded-pill">{{ stores|length }} store{{ stores|length|pluralize }}</span>
+            </div>
+
+            {% if stores %}
+              <div class="row g-3">
+                {% for store in stores %}
+                  <div class="col-12 col-md-6 col-xl-4">
+                    <div class="card border-0 shadow-sm h-100">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                          <h5 class="card-title mb-0">{{ store.name|default:'Unnamed Store' }}</h5>
+                          <span class="badge bg-light text-dark">Active</span>
+                        </div>
+                        <p class="text-muted mb-2">{{ store.description|default:'No description available yet.' }}</p>
+                        <div class="small text-muted">
+                          <div>Location: {{ store.address|default:'Not set' }}</div>
+                          <div>Products: {{ store.products.count|default:0 }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body text-center py-5">
+                  <h5 class="mb-2">No stores yet</h5>
+                  <p class="text-muted mb-0">This seller does not have any stores yet.</p>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

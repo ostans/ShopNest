@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-from .models import User
+from .models import SellerProfile, User
 
 
 class BaseRegisterForm(UserCreationForm):
@@ -11,38 +11,104 @@ class BaseRegisterForm(UserCreationForm):
             attrs={
                 "placeholder": "Enter your phone number",
                 "autofocus": True,
-                "inputmethod": "tel",
+                "inputmode": "tel",
+                "class": "form-control",
             }
         ),
+    )
+    first_name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "First name"}
+        )
+    )
+    last_name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Last name"}
+        )
     )
 
     class Meta:
         model = User
         fields = ["phone_number", "first_name", "last_name", "password1", "password2"]
+        widgets = {
+            "password1": forms.PasswordInput(attrs={"class": "form-control"}),
+            "password2": forms.PasswordInput(attrs={"class": "form-control"}),
+        }
 
 
 class SellerRegisterForm(BaseRegisterForm):
 
-    national_id = forms.CharField(max_length=10)
+    national_id = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "National ID"}
+        ),
+    )
 
     class Meta(BaseRegisterForm.Meta):
-        fields = BaseRegisterForm.Meta.fields + ["natinaol_id"]
+        fields = BaseRegisterForm.Meta.fields + ["national_id"]
         widgets = {
+            **BaseRegisterForm.Meta.widgets,
             "bio": forms.Textarea(
-                attrs={"rows": 3, "placeholder": "Tell buyers about your business..."}
-            )
+                attrs={
+                    "rows": 3,
+                    "placeholder": "Tell buyers about your business...",
+                    "class": "form-control",
+                }
+            ),
         }
+
+
+class BecomeSellerForm(forms.ModelForm):
+    national_id = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "National ID",
+            }
+        ),
+    )
+    address = forms.CharField(
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Your shop or business address",
+            }
+        ),
+    )
+    bio = forms.CharField(
+        required=False,
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": 4,
+                "placeholder": "Tell customers about your business...",
+            }
+        ),
+    )
+
+    class Meta:
+        model = SellerProfile
+        fields = ["national_id", "address", "bio"]
 
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
-        max_length=11,
+        max_length=13,
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Enter your phone number",
                 "autofocus": True,
                 "inputmode": "tel",
+                "class": "form-control",
             }
         ),
     )
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": "Password"}
+        )
+    )
