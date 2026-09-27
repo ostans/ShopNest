@@ -1,6 +1,7 @@
 argcomplete==3.7.2
 asgiref==3.12.1
 Django==6.1
+django-autoslug==1.9.9
 django-unfold==0.104.1
 pillow==12.3.0
 pipx==1.16.7

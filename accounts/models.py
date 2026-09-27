@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import models
 
+from core.models import BaseModel
+
 phone_regex = RegexValidator(
     regex=r"^\+989\d{9}$",
     message="Phone number must be in the format: +989XXXXXXXXX",
@@ -77,7 +79,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.first_name} - {self.last_name}"
 
 
-class CustomerProfile(models.Model):
+class CustomerProfile(BaseModel):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -85,8 +87,6 @@ class CustomerProfile(models.Model):
     )
     address = models.CharField(max_length=255, blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Customer Profile - {self.user.full_name}"
@@ -103,8 +103,6 @@ class SellerProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Seller Profile - {self.user.full_name}"
