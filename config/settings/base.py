@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "unfold",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {}
+AUTH_USER_MODEL = "accounts.User"
 
 
 # Password validation
