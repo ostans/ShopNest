@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <section class="container py-4">
+    {% if heroes %}
+      {% with hero=heroes|first %}
+        <div
+          class="hero-banner rounded-4 overflow-hidden shadow-sm position-relative"
+          {% if hero.image %}
+            style="background-image: linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(31, 41, 55, 0.5)), url('{{ hero.image.url }}');"
+          {% endif %}
+        >
+          <div class="hero-overlay"></div>
+          <div class="hero-content position-relative p-4 p-md-5">
+            <span class="badge text-bg-light px-3 py-2 rounded-pill mb-3">New collection</span>
+            <h1 class="display-5 fw-bold text-white mb-3">{{ hero.title }}</h1>
+            <p class="lead text-white-50 mb-4">{{ hero.subtitle|default:'Discover trending items and everyday essentials.' }}</p>
+            {% if hero.product %}
+              <a class="btn btn-light btn-lg fw-semibold" href="{% url 'product-detail' hero.product.slug %}">Shop now</a>
+            {% else %}
+              <a class="btn btn-light btn-lg fw-semibold" href="{% url 'home' %}">Explore more</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endwith %}
+    {% else %}
+      <div class="bg-dark text-white rounded-4 p-5 shadow-sm">
+        <span class="badge text-bg-light px-3 py-2 rounded-pill mb-3">ShopNest</span>
+        <h1 class="display-5 fw-bold mb-3">Fresh finds for every day</h1>
+        <p class="lead text-white-50 mb-0">Upgrade your lifestyle with stylish and practical essentials.</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="fw-bold mb-0">Popular categories</h2>
+      <a href="{% url 'home' %}" class="text-decoration-none fw-semibold">Browse all</a>
+    </div>
+
+    <div class="row g-3">
+      {% for category in categories %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <a href="{% url 'category' category.slug %}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm category-card">
+              <div class="card-body d-flex flex-column justify-content-between">
+                <div>
+                  <span class="badge text-bg-light mb-3">{{ category.products.count }} items</span>
+                  <h5 class="fw-bold mb-2">{{ category.name }}</h5>
+                </div>
+                <small class="text-muted">View collection</small>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="alert alert-light border">No categories available yet.</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="container pb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="fw-bold mb-0">Latest products</h2>
+      <a href="{% url 'home' %}" class="text-decoration-none fw-semibold">See more</a>
+    </div>
+
+    <div class="row g-4">
+      {% for product in featured_products|slice:':8' %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm product-card overflow-hidden">
+            {% if product.images.first %}
+              <img src="{{ product.images.first.image.url }}" class="card-img-top product-image" alt="{{ product.name }}" />
+            {% else %}
+              <div class="product-placeholder d-flex align-items-center justify-content-center text-muted">No image</div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <small class="text-uppercase text-muted fw-semibold">{{ product.category.name }}</small>
+              <h5 class="mt-2 mb-2 fw-bold">{{ product.name }}</h5>
+              {% if product.lowest_price %}
+                <div class="mt-auto fw-bold fs-5">${{ product.lowest_price }}</div>
+              {% endif %}
+              <a href="{% url 'product-detail' product.slug %}" class="btn btn-dark mt-3">View product</a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="alert alert-light border">No products available yet.</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+{% endblock %}

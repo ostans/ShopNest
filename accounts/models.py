@@ -92,7 +92,7 @@ class CustomerProfile(BaseModel):
         return f"Customer Profile - {self.user.full_name}"
 
 
-class SellerProfile(models.Model):
+class SellerProfile(BaseModel):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

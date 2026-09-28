@@ -28,7 +28,13 @@ jobs:
             MESSAGE="No commit message"
           fi
 
-          TEXT="📁 Repo: [${REPO}]\n🌿 Branch: [${BRANCH}]\n📌 Event: [${EVENT_NAME}]\n👤 Actor: [${ACTOR}]\n📝 Message: ${MESSAGE}"
+          TEXT="
+          📁 Repo: [${REPO}]
+          🌿 Branch: [${BRANCH}]
+          📌 Event: [${EVENT_NAME}]
+          👤 Actor: [${ACTOR}]
+          📝 Message: ${MESSAGE}
+          "
 
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \

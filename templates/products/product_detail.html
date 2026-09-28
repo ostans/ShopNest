@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ product.name }} | {{ site_name }}
+{% endblock %}
+
+{% block content %}
+  <section class="container py-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item">
+          <a href="{% url 'home' %}" class="text-decoration-none">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{% url 'category' product.category.slug %}" class="text-decoration-none">{{ product.category.name }}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+      </ol>
+    </nav>
+
+    <div class="row g-4 align-items-start">
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm overflow-hidden">
+          {% with main_image=product.images.first %}
+            {% if main_image %}
+              <img src="{{ main_image.image.url }}" alt="{{ product.name }}" class="img-fluid w-100" style="max-height: 620px; object-fit: cover;" />
+            {% else %}
+              <div class="d-flex align-items-center justify-content-center bg-light" style="height: 620px;">
+                <span class="text-muted">No image available</span>
+              </div>
+            {% endif %}
+          {% endwith %}
+        </div>
+
+        {% if product.images.all|length > 1 %}
+          <div class="row g-2 mt-3">
+            {% for image in product.images.all %}
+              <div class="col-3">
+                <img src="{{ image.image.url }}" alt="{{ product.name }}" class="img-fluid rounded border" style="height: 110px; width: 100%; object-fit: cover;" />
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-6">
+        <div class="p-1">
+          <small class="text-uppercase text-muted fw-semibold">{{ product.category.name }}</small>
+          <h1 class="mt-2 mb-3 fw-bold">{{ product.name }}</h1>
+
+          {% if product.lowest_price %}
+            <div class="display-6 fw-bold mb-3">${{ product.lowest_price }}</div>
+          {% else %}
+            <div class="display-6 fw-bold mb-3 text-muted">Price on request</div>
+          {% endif %}
+
+          <div class="d-flex flex-wrap gap-2 mb-4">
+            <button type="button" class="btn btn-dark btn-lg px-4">Add to cart</button>
+            <a href="{% url 'home' %}" class="btn btn-outline-dark btn-lg px-4">Continue shopping</a>
+          </div>
+
+          <div class="border rounded-4 p-3 bg-white shadow-sm mb-4">
+            <h2 class="h5 fw-bold mb-3">Product details</h2>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2">
+                <strong>Category:</strong> {{ product.category.name }}
+              </li>
+              <li class="mb-2">
+                <strong>Availability:</strong> In stock
+              </li>
+              <li>
+                <strong>Added:</strong> {{ product.created_at|date:'d M Y' }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="border-top pt-4">
+            <h2 class="h5 fw-bold mb-3">Description</h2>
+            <p class="text-secondary mb-0">
+              {% if product.description %}
+                {{ product.description|linebreaksbr }}
+              {% else %}
+                This product does not have a detailed description yet. Please explore the collection for more items in this category.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if product.category.products.all %}
+    <section class="container pb-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold mb-0">More from {{ product.category.name }}</h2>
+        <a href="{% url 'category' product.category.slug %}" class="text-decoration-none fw-semibold">View all</a>
+      </div>
+
+      <div class="row g-4">
+        {% for related in product.category.products.all %}
+          {% if related.slug != product.slug %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+              <div class="card h-100 border-0 shadow-sm product-card overflow-hidden">
+                {% if related.images.first %}
+                  <img src="{{ related.images.first.image.url }}" class="card-img-top product-image" alt="{{ related.name }}" />
+                {% else %}
+                  <div class="product-placeholder d-flex align-items-center justify-content-center text-muted">No image</div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                  <small class="text-uppercase text-muted fw-semibold">{{ related.category.name }}</small>
+                  <h5 class="mt-2 mb-2 fw-bold">{{ related.name }}</h5>
+                  {% if related.lowest_price %}
+                    <div class="mt-auto fw-bold fs-5">${{ related.lowest_price }}</div>
+                  {% endif %}
+                  <a href="{% url 'product-detail' related.slug %}" class="btn btn-dark mt-3">View product</a>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% empty %}
+          <div class="col-12">
+            <div class="alert alert-light border">No more products in this category.</div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}
