@@ -63,6 +63,13 @@
                 <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
               </li>
             </ul>
+            <form class="d-flex search-form me-lg-3 my-3 my-lg-0" action="{% url 'search' %}" method="get" role="search">
+              <label class="visually-hidden" for="site-search">Search products</label>
+              <div class="input-group">
+                <input id="site-search" class="form-control" type="search" name="q" placeholder="Search products" value="{{ request.GET.q|default:'' }}" />
+                <button class="btn btn-outline-dark" type="submit" aria-label="Search"><i class="bi bi-search" aria-hidden="true"></i></button>
+              </div>
+            </form>
             <form class="d-flex me-3">
               {% if request.user.is_authenticated %}
                 <button class="btn btn-dark"><i class="bi bi-person-fill me-1"></i><a href="{% url 'customer-dashboard' %}" class="text-white text-decoration-none">Dashboard</a></button>

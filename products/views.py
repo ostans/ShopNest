@@ -18,7 +18,7 @@ class ProductListMixin:
             Product.objects.annotate(
                 min_price=Min("listings__price", filter=self._active_listing_filter())
             )
-            .filter(min_price__is_null=False)
+            .filter(min_price__isnull=False)
             .select_related("category")
             .prefetch_related("images")
         )
@@ -33,11 +33,12 @@ class HomeView(ProductListMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["heroes"] = Hero.objects.all()
+        context["heroes"] = Hero.objects.filter(is_active=True).order_by("id")
         context["categories"] = Category.objects.prefetch_related("children").filter(
             parent__isnull=True
         )
-        context["featured_products"] = self.base_queryset().order_by("created_at")
+        context["products"] = self.base_queryset().order_by("created_at")
+        return context
 
 
 class CategoryProductListView(ProductListMixin, ListView):
@@ -46,7 +47,11 @@ class CategoryProductListView(ProductListMixin, ListView):
     def get_queryset(self):
         self.category = get_object_or_404(Category, slug=self.kwargs["slug"])
         return (
-            self.base_queryset().filter(category=self.category).order_by("created_at")
+            Product.objects.annotate(
+                min_price=Min("listings__price", filter=self._active_listing_filter())
+            )
+            .filter(category=self.category)
+            .order_by("created_at")
         )
 
     def get_context_data(self, **kwargs):
@@ -87,10 +92,15 @@ class ProductDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["listings"] = (
+        listings = (
             self.object.listings.filter(is_active=True)
             .select_related("store")
             .order_by("price")
         )
-
+        context["listings"] = listings
+        context["lowest_listing_price"] = (
+            listings.filter(stock_quantity__gt=0)
+            .values_list("price", flat=True)
+            .first()
+        )
         return context

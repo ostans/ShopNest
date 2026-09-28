@@ -59,16 +59,7 @@ class SellerRegisterForm(BaseRegisterForm):
         }
 
 
-class BecomeSellerForm(forms.ModelForm):
-    national_id = forms.CharField(
-        max_length=10,
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "National ID",
-            }
-        ),
-    )
+class EditSellerProfileForm(forms.ModelForm):
     address = forms.CharField(
         max_length=255,
         required=False,
@@ -92,7 +83,22 @@ class BecomeSellerForm(forms.ModelForm):
 
     class Meta:
         model = SellerProfile
-        fields = ["national_id", "address", "bio"]
+        fields = ["address", "bio"]
+
+
+class BecomeSellerForm(EditSellerProfileForm):
+    national_id = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "National ID",
+            }
+        ),
+    )
+
+    class Meta(EditSellerProfileForm.Meta):
+        fields = ["national_id"] + EditSellerProfileForm.Meta.fields
 
 
 class LoginForm(AuthenticationForm):

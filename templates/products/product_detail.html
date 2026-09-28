@@ -20,12 +20,12 @@
 
     <div class="row g-4 align-items-start">
       <div class="col-lg-6">
-        <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="product-detail-image-frame shadow-sm">
           {% with main_image=product.images.first %}
             {% if main_image %}
-              <img src="{{ main_image.image.url }}" alt="{{ product.name }}" class="img-fluid w-100" style="max-height: 620px; object-fit: cover;" />
+              <img src="{{ main_image.image.url }}" alt="{{ product.name }}" class="product-detail-image" />
             {% else %}
-              <div class="d-flex align-items-center justify-content-center bg-light" style="height: 620px;">
+              <div class="product-detail-placeholder d-flex align-items-center justify-content-center text-muted">
                 <span class="text-muted">No image available</span>
               </div>
             {% endif %}
@@ -36,7 +36,7 @@
           <div class="row g-2 mt-3">
             {% for image in product.images.all %}
               <div class="col-3">
-                <img src="{{ image.image.url }}" alt="{{ product.name }}" class="img-fluid rounded border" style="height: 110px; width: 100%; object-fit: cover;" />
+                <img src="{{ image.image.url }}" alt="{{ product.name }}" class="product-detail-thumbnail" />
               </div>
             {% endfor %}
           </div>
@@ -48,25 +48,47 @@
           <small class="text-uppercase text-muted fw-semibold">{{ product.category.name }}</small>
           <h1 class="mt-2 mb-3 fw-bold">{{ product.name }}</h1>
 
-          {% if product.lowest_price %}
-            <div class="display-6 fw-bold mb-3">${{ product.lowest_price }}</div>
+          {% if lowest_listing_price %}
+            <div class="display-6 fw-bold mb-3">${{ lowest_listing_price }}</div>
+          {% elif listings %}
+            <div class="display-6 fw-bold mb-3 text-muted">Out of stock</div>
           {% else %}
             <div class="display-6 fw-bold mb-3 text-muted">Price on request</div>
           {% endif %}
 
           <div class="d-flex flex-wrap gap-2 mb-4">
-            <button type="button" class="btn btn-dark btn-lg px-4">Add to cart</button>
             <a href="{% url 'home' %}" class="btn btn-outline-dark btn-lg px-4">Continue shopping</a>
           </div>
+
+          <section class="seller-list mb-4" aria-labelledby="seller-list-heading">
+            <h2 id="seller-list-heading" class="h5 fw-bold mb-3">Available sellers</h2>
+            {% for listing in listings %}
+              <div class="seller-row d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 py-3">
+                <div>
+                  <h3 class="h6 fw-semibold mb-1">{{ listing.store.name }}</h3>
+                  <div class="fw-bold">${{ listing.price }}</div>
+                  {% if listing.is_in_stock %}
+                    <small class="text-success">In stock: {{ listing.stock_quantity }}</small>
+                  {% else %}
+                    <small class="text-muted">Out of stock</small>
+                  {% endif %}
+                </div>
+                {% if listing.is_in_stock %}
+                  <a href="#" class="btn btn-dark flex-shrink-0"><i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Add to cart</a>
+                {% else %}
+                  <button type="button" class="btn btn-outline-secondary flex-shrink-0" disabled>Unavailable</button>
+                {% endif %}
+              </div>
+            {% empty %}
+              <p class="text-muted mb-0">No sellers are currently offering this product.</p>
+            {% endfor %}
+          </section>
 
           <div class="border rounded-4 p-3 bg-white shadow-sm mb-4">
             <h2 class="h5 fw-bold mb-3">Product details</h2>
             <ul class="list-unstyled mb-0">
               <li class="mb-2">
                 <strong>Category:</strong> {{ product.category.name }}
-              </li>
-              <li class="mb-2">
-                <strong>Availability:</strong> In stock
               </li>
               <li>
                 <strong>Added:</strong> {{ product.created_at|date:'d M Y' }}
@@ -101,6 +123,7 @@
           {% if related.slug != product.slug %}
             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
               <div class="card h-100 border-0 shadow-sm product-card overflow-hidden">
+                <a href="{% url 'product-detail' related.slug %}" class="product-card-link" aria-label="View {{ related.name }}"></a>
                 {% if related.images.first %}
                   <img src="{{ related.images.first.image.url }}" class="card-img-top product-image" alt="{{ related.name }}" />
                 {% else %}
@@ -112,7 +135,7 @@
                   {% if related.lowest_price %}
                     <div class="mt-auto fw-bold fs-5">${{ related.lowest_price }}</div>
                   {% endif %}
-                  <a href="{% url 'product-detail' related.slug %}" class="btn btn-dark mt-3">View product</a>
+                  <a href="#" class="btn btn-dark mt-3"><i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Add to cart</a>
                 </div>
               </div>
             </div>

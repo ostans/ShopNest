@@ -12,7 +12,6 @@ class ProductImageInline(admin.TabularInline):
 @admin.register(Category)
 class CategoryAdmin(ModelAdmin):
     list_display = ["name", "parent"]
-    prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(Product)

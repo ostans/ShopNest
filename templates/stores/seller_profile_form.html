@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Seller Profile - {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="mb-4">{% block form_title %}Seller Profile{% endblock %}</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger" style="font-size:13px;">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary rounded-pill px-4">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

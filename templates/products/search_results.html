@@ -8,7 +8,9 @@
   <section class="container py-4">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item">
+          <a href="{% url 'home' %}" class="text-decoration-none">Home</a>
+        </li>
         <li class="breadcrumb-item active" aria-current="page">Search</li>
       </ol>
     </nav>
@@ -17,7 +19,9 @@
       <small class="text-uppercase text-muted fw-semibold">Search</small>
       <h1 class="fw-bold mb-2">Search results</h1>
       {% if query %}
-        <p class="text-muted mb-0">You searched for: <strong>{{ query }}</strong></p>
+        <p class="text-muted mb-0">
+          You searched for: <strong>{{ query }}</strong>
+        </p>
       {% else %}
         <p class="text-muted mb-0">Please enter a search term to find products.</p>
       {% endif %}
@@ -33,6 +37,7 @@
       {% for product in products %}
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
           <div class="card h-100 border-0 shadow-sm product-card overflow-hidden">
+            <a href="{% url 'product-detail' product.slug %}" class="product-card-link" aria-label="View {{ product.name }}"></a>
             {% if product.images.first %}
               <img src="{{ product.images.first.image.url }}" class="card-img-top product-image" alt="{{ product.name }}" />
             {% else %}
@@ -44,7 +49,7 @@
               {% if product.lowest_price %}
                 <div class="mt-auto fw-bold fs-5">${{ product.lowest_price }}</div>
               {% endif %}
-              <a href="{% url 'product-detail' product.slug %}" class="btn btn-dark mt-3">View product</a>
+              <a href="#" class="btn btn-dark mt-3"><i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Add to cart</a>
             </div>
           </div>
         </div>
@@ -65,17 +70,25 @@
       <nav aria-label="Page navigation" class="mt-5">
         <ul class="pagination justify-content-center">
           {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Previous</a></li>
+            <li class="page-item">
+              <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
           {% endif %}
           {% for num in paginator.page_range %}
             {% if page_obj.number == num %}
-              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+              <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+              </li>
             {% else %}
-              <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a></li>
+              <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+              </li>
             {% endif %}
           {% endfor %}
           {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">Next</a></li>
+            <li class="page-item">
+              <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">Next</a>
+            </li>
           {% endif %}
         </ul>
       </nav>

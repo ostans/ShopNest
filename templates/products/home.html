@@ -3,26 +3,34 @@
 {% block content %}
   <section class="container py-4">
     {% if heroes %}
-      {% with hero=heroes|first %}
-        <div
-          class="hero-banner rounded-4 overflow-hidden shadow-sm position-relative"
-          {% if hero.image %}
-            style="background-image: linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(31, 41, 55, 0.5)), url('{{ hero.image.url }}');"
-          {% endif %}
-        >
-          <div class="hero-overlay"></div>
-          <div class="hero-content position-relative p-4 p-md-5">
-            <span class="badge text-bg-light px-3 py-2 rounded-pill mb-3">New collection</span>
-            <h1 class="display-5 fw-bold text-white mb-3">{{ hero.title }}</h1>
-            <p class="lead text-white-50 mb-4">{{ hero.subtitle|default:'Discover trending items and everyday essentials.' }}</p>
-            {% if hero.product %}
-              <a class="btn btn-light btn-lg fw-semibold" href="{% url 'product-detail' hero.product.slug %}">Shop now</a>
-            {% else %}
-              <a class="btn btn-light btn-lg fw-semibold" href="{% url 'home' %}">Explore more</a>
-            {% endif %}
-          </div>
+      <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
+        <div class="carousel-inner rounded-4 shadow-sm">
+          {% for hero in heroes %}
+            <div class="carousel-item">
+              <div class="hero-banner position-relative">
+                {% if hero.image %}
+                  <img class="hero-image" src="{{ hero.image.url }}" alt="" />
+                {% endif %}
+                <div class="hero-overlay"></div>
+                <div class="hero-content position-relative p-4 p-md-5">
+                  <span class="badge text-bg-light px-3 py-2 rounded-pill mb-3">New collection</span>
+                  <h1 class="display-5 fw-bold text-white mb-3">{{ hero.title }}</h1>
+                  <p class="lead text-white-50 mb-4">{{ hero.subtitle|default:'Discover trending items and everyday essentials.' }}</p>
+                  {% if hero.product %}
+                    <a class="btn btn-light btn-lg fw-semibold" href="{% url 'product-detail' hero.product.slug %}">{{ hero.button_text }}</a>
+                  {% else %}
+                    <a class="btn btn-light btn-lg fw-semibold" href="{% url 'home' %}">{{ hero.button_text }}</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
         </div>
-      {% endwith %}
+        {% if heroes|length > 1 %}
+          <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Previous slide"><span class="carousel-control-prev-icon" aria-hidden="true"></span></button>
+          <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" aria-label="Next slide"><span class="carousel-control-next-icon" aria-hidden="true"></span></button>
+        {% endif %}
+      </div>
     {% else %}
       <div class="bg-dark text-white rounded-4 p-5 shadow-sm">
         <span class="badge text-bg-light px-3 py-2 rounded-pill mb-3">ShopNest</span>
@@ -68,9 +76,10 @@
     </div>
 
     <div class="row g-4">
-      {% for product in featured_products|slice:':8' %}
+      {% for product in products|slice:':8' %}
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
           <div class="card h-100 border-0 shadow-sm product-card overflow-hidden">
+            <a href="{% url 'product-detail' product.slug %}" class="product-card-link" aria-label="View {{ product.name }}"></a>
             {% if product.images.first %}
               <img src="{{ product.images.first.image.url }}" class="card-img-top product-image" alt="{{ product.name }}" />
             {% else %}
@@ -82,7 +91,7 @@
               {% if product.lowest_price %}
                 <div class="mt-auto fw-bold fs-5">${{ product.lowest_price }}</div>
               {% endif %}
-              <a href="{% url 'product-detail' product.slug %}" class="btn btn-dark mt-3">View product</a>
+              <a href="#" class="btn btn-dark mt-3"><i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Add to cart</a>
             </div>
           </div>
         </div>
@@ -93,5 +102,4 @@
       {% endfor %}
     </div>
   </section>
-
 {% endblock %}

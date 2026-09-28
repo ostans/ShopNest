@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Add Listing - {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <p><a href="{% url 'stores:listings' store.slug %}">&larr; {{ store.name }}</a></p>
+    <h2 class="mb-4">Add a listing</h2>
+
+    <form method="get" class="d-flex mb-4" style="max-width:500px;">
+        <input type="text" name="q" value="{{ query }}" class="form-control me-2" placeholder="Search for a product...">
+        <button type="submit" class="btn btn-primary rounded-pill">Search</button>
+    </form>
+
+    {% if query %}
+        {% if results %}
+            <div class="list-group" style="max-width:600px;">
+                {% for product in results %}
+                    <a href="{% url 'stores:listing-create' store.slug product.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        {{ product.name }}
+                        <span class="text-muted" style="font-size:13px;">{{ product.category.name }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">No matching products found.</p>
+        {% endif %}
+        <p class="mt-4">
+            Can't find it?
+            <a href="{% url 'stores:product-quick-create' store.slug %}">Add it as a new product</a>
+        </p>
+    {% else %}
+        <p class="text-muted">Search for the product you want to sell, or
+            <a href="{% url 'stores:product-quick-create' store.slug %}">add a new one</a> if it doesn't exist yet.
+        </p>
+    {% endif %}
+</div>
+{% endblock %}
