@@ -10,4 +10,10 @@ urlpatterns = [
     path("seller/dashboard/", views.seller_dashboard_view, name="seller-dashboard"),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
+    path("addresses/", views.address_list_view, name="address-list"),
+    path("addresses/new/", views.address_create_view, name="address-create"),
+    path("addresses/<int:pk>/edit/", views.address_update_view, name="address-update"),
+    path(
+        "addresses/<int:pk>/delete/", views.address_delete_view, name="address-delete"
+    ),
 ]

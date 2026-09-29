@@ -85,7 +85,7 @@ class CustomerProfile(BaseModel):
         on_delete=models.CASCADE,
         related_name="customer_profile",
     )
-    address = models.CharField(max_length=255, blank=True, null=True)
+    avatar = models.ImageField(upload_to="customers/avatars/", blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def __str__(self):
@@ -101,8 +101,35 @@ class SellerProfile(BaseModel):
     national_id = models.CharField(max_length=10, unique=True)
     logo = models.ImageField(upload_to="sellers/logos/", blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Seller Profile - {self.user.full_name}"
+
+
+class Address(BaseModel):
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses',
+    )
+    receiver_name = models.CharField(max_length=150, help_text='Name of the person receiving the package')
+    receiver_phone = models.CharField(max_length=16, validators=[phone_regex])
+    province = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    address_line = models.CharField(max_length=255)
+    postal_code = models.CharField(max_length=10, blank=True)
+    is_default = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'address'
+        verbose_name_plural = 'addresses'
+
+    def __str__(self):
+        return f'{self.receiver_name} - {self.city}, {self.address_line[:30]}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_default:
+            Address.objects.filter(user=self.user).exclude(pk=self.pk).update(is_default=False)
+        elif not Address.objects.filter(user=self.user, is_default=True).exists():
+            Address.objects.filter(pk=self.pk).update(is_default=True)

@@ -2,10 +2,16 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
-from .forms import BaseRegisterForm, BecomeSellerForm, LoginForm, SellerRegisterForm
-from .models import SellerProfile
+from .forms import (
+    AddressForm,
+    BaseRegisterForm,
+    BecomeSellerForm,
+    LoginForm,
+    SellerRegisterForm,
+)
+from .models import Address, SellerProfile
 
 
 def customer_register_view(request):
@@ -116,3 +122,50 @@ def seller_dashboard_view(request):
         "accounts/seller_dahboard.html",
         {"profile": profile, "stores": stores, "user": request.user},
     )
+
+
+@login_required
+def address_list_view(request):
+    address_list_view = Address.objects.filter(user=request.user)
+    return render(
+        request, "accounts/address_list.html", {"addresses": address_list_view}
+    )
+
+
+@login_required
+def address_create_view(request):
+    if request.method == "POST":
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
+            messages.success(request, "Address saved.")
+            return redirect("address-list")
+    else:
+        form = AddressForm()
+    return render(request, "accounts/address_form.html", {"form": form})
+
+
+@login_required
+def address_update_view(request, pk):
+    address = Address.objects.filter(user=request.user).get(pk=pk)
+    if request.method == "POST":
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Address updated.")
+            return redirect("address-list")
+    else:
+        form = AddressForm(instance=address)
+    return render(request, "accounts/address_form.html", {"form": form})
+
+
+@login_required
+def address_delete_view(request, pk):
+    address = Address.objects.filter(user=request.user).get(pk=pk)
+    if request.method == "POST":
+        address.delete()
+        messages.success(request, "Address deleted.")
+        return redirect("address-list")
+    return render(request, "accounts/address_confirm_delete.html", {"address": address})

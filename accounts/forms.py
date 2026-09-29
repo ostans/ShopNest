@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-from .models import SellerProfile, User
+from .models import Address, SellerProfile, User
 
 
 class BaseRegisterForm(UserCreationForm):
@@ -99,6 +99,37 @@ class BecomeSellerForm(EditSellerProfileForm):
 
     class Meta(EditSellerProfileForm.Meta):
         fields = ["national_id"] + EditSellerProfileForm.Meta.fields
+
+
+class AddressForm(forms.ModelForm):
+    phone_field_name = "receiver_phone"
+
+    class Meta:
+        model = Address
+        fields = [
+            "receiver_name",
+            "receiver_phone",
+            "province",
+            "city",
+            "address_line",
+            "postal_code",
+            "is_default",
+        ]
+        widgets = {
+            "receiver_name": forms.TextInput(attrs={"class": "form-control"}),
+            "receiver_phone": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter phone number",
+                    "inputmode": "tel",
+                }
+            ),
+            "province": forms.TextInput(attrs={"class": "form-control"}),
+            "city": forms.TextInput(attrs={"class": "form-control"}),
+            "address_line": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+            "postal_code": forms.TextInput(attrs={"class": "form-control"}),
+            "is_default": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
 
 
 class LoginForm(AuthenticationForm):
