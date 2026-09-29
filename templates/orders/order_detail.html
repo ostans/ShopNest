@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}
+  Order #{{ order.pk }} | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+      <div>
+        <a class="text-decoration-none" href="{% url 'orders:history' %}"><i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Order history</a>
+        <h1 class="h2 mt-3 mb-1">Order #{{ order.pk }}</h1>
+        <p class="text-secondary mb-0">Placed {{ order.created_at|date:'d M Y, H:i' }}</p>
+      </div>
+      <span class="badge text-bg-secondary fs-6">Order details</span>
+    </div>
+    <div class="row g-4 align-items-start">
+      <section class="col-lg-8">
+        {% for sub_order in order.sub_orders.all %}
+          <article class="border rounded mb-3">
+            <header class="d-flex flex-wrap justify-content-between gap-2 border-bottom p-3">
+              <h2 class="h6 mb-0">{{ sub_order.store.name }}</h2>
+              <span class="badge text-bg-light">{{ sub_order.get_status_display }}</span>
+            </header>
+            <div class="list-group list-group-flush">
+              {% for item in sub_order.items.all %}
+                <div class="list-group-item d-flex justify-content-between gap-3 p-3">
+                  <div class="d-flex align-items-center gap-3">
+                    {% with product_image=item.product.images.first %}
+                      {% if product_image %}
+                        <img src="{{ product_image.image.url }}" alt="" class="rounded border bg-white p-1 flex-shrink-0" width="56" height="56" style="object-fit: contain" />
+                      {% endif %}
+                    {% endwith %}
+                    <span><a class="fw-semibold text-decoration-none" href="{% url 'product-detail' item.product.slug %}">{{ item.product.name }}</a> <span class="text-secondary">× {{ item.quantity }}</span></span>
+                  </div>
+                  <strong>{{ item.line_total }}</strong>
+                </div>
+              {% endfor %}
+            </div>
+            <footer class="d-flex flex-wrap justify-content-between align-items-center gap-2 border-top p-3">
+              <span>Store subtotal <strong>{{ sub_order.subtotal }}</strong></span>
+              {% if sub_order.status == 'shipped' %}
+                <form method="post" action="{% url 'orders:mark-received' sub_order.pk %}">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-dark" type="submit">Confirm delivery</button>
+                </form>
+              {% endif %}
+            </footer>
+          </article>
+        {% empty %}
+          <p class="text-secondary">No items are associated with this order.</p>
+        {% endfor %}
+      </section>
+      <aside class="col-lg-4">
+        <section class="border rounded p-4 mb-3">
+          <h2 class="h5">Delivery address</h2>
+          <p class="mb-1">{{ order.receiver_name }} · {{ order.receiver_phone }}</p>
+          <p class="text-secondary mb-0">
+            {{ order.province }}, {{ order.city }}, {{ order.address_line }}{% if order.postal_code %}
+              <br />Postal code {{ order.postal_code }}
+            {% endif %}
+          </p>
+        </section>
+        <section class="border rounded p-4">
+          <div class="d-flex justify-content-between">
+            <strong>Order total</strong><strong>{{ order.total_price }}</strong>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Checkout | {{ site_name }}{% endblock %}
+{% block content %}
+<main class="container py-5">
+  <a class="text-decoration-none" href="{% url 'cart-detail' %}"><i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back to cart</a>
+  <h1 class="h2 mt-3 mb-4">Checkout</h1>
+  <div class="row g-4 align-items-start">
+    <section class="col-lg-7">
+      <form method="post" class="border rounded p-4">
+        {% csrf_token %}
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h2 class="h5 mb-0">Delivery address</h2>
+          <a class="small text-decoration-none" href="{% url 'address-list' %}">Manage addresses</a>
+        </div>
+        {% for address in addresses %}
+          <label class="d-flex gap-3 border rounded p-3 mb-2">
+            <input class="form-check-input mt-1" type="radio" name="address_id" value="{{ address.pk }}" {% if forloop.first %}checked{% endif %} required />
+            <span>
+              <strong>{{ address.receiver_name }}</strong> · {{ address.receiver_phone }}<br />
+              <span class="text-secondary">{{ address.province }}, {{ address.city }}, {{ address.address_line }}{% if address.postal_code %} · {{ address.postal_code }}{% endif %}</span>
+              {% if address.is_default %}<span class="badge text-bg-success ms-1">Default</span>{% endif %}
+            </span>
+          </label>
+        {% empty %}
+          <div class="alert alert-warning">Add a delivery address before placing your order.</div>
+          <a class="btn btn-outline-dark mb-3" href="{% url 'address-create' %}">Add address</a>
+        {% endfor %}
+        {% if addresses %}<button class="btn btn-dark mt-3" type="submit">Place order</button>{% endif %}
+      </form>
+    </section>
+    <aside class="col-lg-5">
+      <section class="border rounded p-4">
+        <h2 class="h5 mb-3">Order summary</h2>
+        {% for store, items in groups.items %}
+          <h3 class="small fw-bold mt-3">{{ store.name }}</h3>
+          {% for item in items %}
+            <div class="d-flex justify-content-between gap-3 small py-1">
+              <span>{{ item.listing.product.name }} × {{ item.quantity }}</span><span>{{ item.subtotal }}</span>
+            </div>
+          {% endfor %}
+        {% endfor %}
+        <div class="d-flex justify-content-between border-top pt-3 mt-3">
+          <strong>Total</strong><strong>{{ cart.total_price }}</strong>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+{% endblock %}

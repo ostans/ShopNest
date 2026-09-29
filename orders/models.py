@@ -70,6 +70,7 @@ class SubOrder(BaseModel):
     def mark_completed(self):
 
         from django.db import transaction
+
         from payments.services import credit_seller_for_suborder
 
         with transaction.atomic():
@@ -116,7 +117,7 @@ class OrderItem(BaseModel):
     quantity = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.quantity} x {self.product_name_snapshot}"
+        return f"{self.quantity} x {self.product.name}"
 
     @property
     def line_total(self):

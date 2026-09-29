@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+  Your Cart | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="mb-4">
+      <p class="text-uppercase text-muted small mb-1">ShopNest</p>
+      <h1 class="h2 mb-0">Your cart <span class="text-secondary">({{ cart.total_items }})</span></h1>
+    </div>
+    {% if cart.items.exists %}
+      <div class="row g-4 align-items-start">
+        <div class="col-lg-8">
+          {% for store, items in groups.items %}
+            <section class="mb-4">
+              <h2 class="h5 border-bottom pb-2">{{ store.name }}</h2>
+              <div class="list-group">
+                {% for item in items %}
+                  <article class="list-group-item p-3 p-md-4">
+                    <div class="row align-items-center g-3">
+                      <div class="col-12 col-md">
+                        <h3 class="h6 mb-1">{{ item.listing.product.name }}</h3>
+                        <p class="text-secondary small mb-1">{{ item.listing.price }} each</p>
+                        <p class="fw-semibold mb-0">Subtotal: {{ item.subtotal }}</p>
+                      </div>
+                      <div class="col-12 col-sm-auto">
+                        <form method="post" action="{% url 'update-item' item.pk %}" class="d-flex align-items-center gap-2">
+                          {% csrf_token %}
+                          <label class="visually-hidden" for="quantity-{{ item.pk }}">Quantity</label>
+                          <input id="quantity-{{ item.pk }}" class="form-control" type="number" name="quantity" min="1" max="{{ item.listing.stock_quantity }}" value="{{ item.quantity }}" style="width: 90px" />
+                          <button class="btn btn-outline-dark" type="submit" aria-label="Update quantity">Update</button>
+                        </form>
+                      </div>
+                      <div class="col-12 col-sm-auto">
+                        <form method="post" action="{% url 'remove-item' item.pk %}">
+                          {% csrf_token %}
+                          <button class="btn btn-link text-danger p-0" type="submit">Remove</button>
+                        </form>
+                      </div>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            </section>
+          {% endfor %}
+        </div>
+        <aside class="col-lg-4">
+          <section class="border rounded p-4">
+            <h2 class="h5">Order summary</h2>
+            <div class="d-flex justify-content-between border-top pt-3 mt-3 mb-3">
+              <span>Total</span><strong>{{ cart.total_price }}</strong>
+            </div>
+            <a class="btn btn-dark w-100" href="{% url 'orders:checkout' %}">Continue to checkout</a>
+          </section>
+        </aside>
+      </div>
+    {% else %}
+      <section class="border rounded p-5 text-center">
+        <i class="bi bi-cart3 display-5 text-secondary" aria-hidden="true"></i>
+        <h2 class="h4 mt-3">Your cart is empty</h2>
+        <p class="text-secondary">Browse the catalog and add something you love.</p>
+        <a class="btn btn-dark" href="{% url 'home' %}">Explore products</a>
+      </section>
+    {% endif %}
+  </main>
+{% endblock %}

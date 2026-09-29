@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}
+  Order History | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="mb-4">
+      <p class="text-uppercase text-muted small mb-1">Account</p>
+      <h1 class="h2 mb-0">Order history</h1>
+    </div>
+    <div class="list-group">
+      {% for order in orders %}
+        <a class="list-group-item list-group-item-action p-4" href="{% url 'orders:order-detail' order.pk %}">
+          <div class="d-flex flex-wrap justify-content-between gap-3">
+            <div>
+              <h2 class="h5 mb-1">Order #{{ order.pk }}</h2>
+              <p class="text-secondary small mb-2">{{ order.created_at|date:'d M Y, H:i' }} · {{ order.sub_orders.count }} store{{ order.sub_orders.count|pluralize }}</p>
+              {% for sub_order in order.sub_orders.all %}
+                <span class="badge text-bg-light me-1">{{ sub_order.store.name }}: {{ sub_order.get_status_display }}</span>
+              {% endfor %}
+            </div>
+            <strong class="align-self-center">{{ order.total_price }}</strong>
+          </div>
+        </a>
+      {% empty %}
+        <section class="border rounded p-5 text-center">
+          <h2 class="h5">No orders yet</h2>
+          <p class="text-secondary">Your completed checkouts will appear here.</p>
+          <a class="btn btn-dark" href="{% url 'home' %}">Browse products</a>
+        </section>
+      {% endfor %}
+    </div>
+    {% if is_paginated %}
+      <nav class="mt-4" aria-label="Order pages">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+          {% endif %}
+          <li class="page-item disabled">
+            <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          </li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </main>
+{% endblock %}

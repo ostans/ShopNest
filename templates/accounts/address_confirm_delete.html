@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}
+  Remove Address | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <a class="text-decoration-none" href="{% url 'address-list' %}"><i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back to addresses</a>
+        <section class="border rounded p-4 p-md-5 mt-3">
+          <h1 class="h3">Remove this address?</h1>
+          <p class="text-secondary">This will remove the saved address for {{ address.receiver_name }} at {{ address.city }}.</p>
+          <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Remove address</button>
+            <a class="btn btn-outline-secondary ms-2" href="{% url 'address-list' %}">Keep address</a>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+{% endblock %}

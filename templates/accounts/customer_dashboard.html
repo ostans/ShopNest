@@ -21,12 +21,12 @@
                     <span class="badge bg-primary rounded-pill">Customer</span>
                   </div>
                   <div class="mb-2">
-                    <small class="text-muted d-block">Address</small>
-                    <strong>{{ profile.address|default:'No address added yet' }}</strong>
+                    <small class="text-muted d-block">Phone number</small>
+                    <strong>{{ request.user.phone_number }}</strong>
                   </div>
                   <div>
-                    <small class="text-muted d-block">Balance</small>
-                    <strong>{{ profile.balance|floatformat:2 }} $</strong>
+                    <small class="text-muted d-block">Saved addresses</small>
+                    <strong>{{ request.user.addresses.count }}</strong>
                   </div>
                 </div>
               </div>
@@ -38,7 +38,10 @@
                   <h5 class="card-title mb-3">Quick Actions</h5>
                   <div class="row g-3">
                     <div class="col-12 col-sm-6">
-                      <a href="#" class="btn btn-outline-secondary w-100 h-100 py-3">Orders</a>
+                      <a href="{% url 'orders:history' %}" class="btn btn-outline-secondary w-100 h-100 py-3">Orders</a>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <a href="{% url 'address-list' %}" class="btn btn-outline-primary w-100 h-100 py-3">Addresses</a>
                     </div>
                     <div class="col-12 col-sm-6">
                       <a href="{% url 'become-seller' %}" class="btn btn-outline-success w-100 h-100 py-3">

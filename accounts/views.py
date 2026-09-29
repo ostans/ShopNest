@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .forms import (
     AddressForm,
@@ -62,6 +63,13 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, "You have successfully logged in")
+            next_url = request.POST.get("next") or request.GET.get("next")
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(next_url)
             return redirect("customer-dashboard")
         else:
             messages.error(request, "Invalid phone number or password")
@@ -116,7 +124,7 @@ def seller_dashboard_view(request):
         messages.error(request, "You are not a seller", extra_tags="danger")
         return redirect("become-seller")
 
-    stores = profile.stores.all() if hasattr(profile, "stores") else []
+    stores = request.user.stores.all()
     return render(
         request,
         "accounts/seller_dahboard.html",

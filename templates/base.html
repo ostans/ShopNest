@@ -10,6 +10,7 @@
       {% endblock %}
     </title>
     <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'assets/favicon.svg' %}" />
     <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,7 +28,7 @@
   <body>
     <div class="page-shell">
       <!-- Navigation -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
         <div class="container px-4 px-lg-5">
           <a class="navbar-brand fw-bolder" href="{% url 'home' %}">{{ site_name }}</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -70,26 +71,65 @@
                 <button class="btn btn-outline-dark" type="submit" aria-label="Search"><i class="bi bi-search" aria-hidden="true"></i></button>
               </div>
             </form>
-            <form class="d-flex me-3">
+            <div class="d-flex align-items-center gap-2 my-3 my-lg-0">
               {% if request.user.is_authenticated %}
-                <button class="btn btn-dark"><i class="bi bi-person-fill me-1"></i><a href="{% url 'customer-dashboard' %}" class="text-white text-decoration-none">Dashboard</a></button>
+                <a class="btn btn-dark text-nowrap" href="{% url 'customer-dashboard' %}"><i class="bi bi-person-fill me-1" aria-hidden="true"></i>Dashboard</a>
               {% else %}
-                <button class="btn btn-dark" type="submit">
-                  <i class="bi bi-box-arrow-in-right me-1"></i>
-                  <a href="{% url 'login' %}" class="text-white text-decoration-none">Login</a>
-                </button>
+                <a class="btn btn-dark text-nowrap" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>Login</a>
               {% endif %}
-            </form>
-            <form class="d-flex" action="#" method="get">
-              <button class="btn btn-outline-dark" type="submit">
-                <i class="bi-cart-fill me-1"></i>
-                Cart
-                <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-              </button>
-            </form>
+              <a class="btn btn-outline-dark text-nowrap" href="{% url 'cart-detail' %}"><i class="bi bi-cart-fill me-1" aria-hidden="true"></i>Cart</a>
+            </div>
           </div>
         </div>
       </nav>
+
+      {% if messages %}
+        <div class="container pt-3" aria-live="polite" aria-atomic="true">
+          {% for message in messages %}
+            <div class="alert {% if 'error' in message.tags or 'danger' in message.tags %}
+                
+                
+                alert-danger
+
+
+              {% elif 'success' in message.tags %}
+                
+                
+                alert-success
+
+
+              {% elif 'warning' in message.tags %}
+                
+                
+                alert-warning
+
+
+              {% else %}
+                
+                
+                alert-info
+
+
+              {% endif %} alert-dismissible fade show"
+              role="{% if 'error' in message.tags or 'danger' in message.tags %}
+                
+                
+                alert
+
+
+              {% else %}
+                
+                
+                status
+
+
+              {% endif %}">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Dismiss"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
 
       <main class="page-main">
         {% block content %}
@@ -100,7 +140,9 @@
       <!-- Footer -->
       <footer class="py-5 bg-dark">
         <div class="container">
-          <p class="m-0 text-center text-white">Copyright &copy; {{ site_name }} 2026</p>
+          <p class="m-0 text-center text-white">
+            Copyright &copy; {{ site_name }} {% now 'Y' %}
+          </p>
         </div>
       </footer>
     </div>

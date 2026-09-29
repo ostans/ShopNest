@@ -25,6 +25,10 @@ class StoreCreateView(SellerRequiredMixin, CreateView):
     form_class = StoreForm
     template_name = "stores/store_create.html"
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse("seller-dashboard")
 
@@ -61,9 +65,9 @@ class ListingSearchProductView(StoreOwnerRequiredMixin, TemplateView):
         results = Product.objects.none()
         if query:
             results = Product.objects.filter(
-                Q(name__icontains=self.query)
-                | Q(description__icontains=self.query)
-                | Q(category__name__icontains=self.query)
+                Q(name__icontains=query)
+                | Q(description__icontains=query)
+                | Q(category__name__icontains=query)
             ).exclude(listings__store=self.store)
 
         context["results"] = results
@@ -124,7 +128,7 @@ class ListingCreateView(StoreOwnerRequiredMixin, CreateView):
             messages.error(
                 self.request, "This store already has a listing for that product."
             )
-            return redirect("stores:listings", store_slug=self.store.slug)
+            return redirect("listings", store_slug=self.store.slug)
 
         form.instance.store = self.store
         form.instance.product = self.product
@@ -132,7 +136,7 @@ class ListingCreateView(StoreOwnerRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("stores:listings", kwargs={"store_slug": self.store.slug})
+        return reverse("listings", kwargs={"store_slug": self.store.slug})
 
 
 class ListingUpdateView(StoreOwnerRequiredMixin, UpdateView):
@@ -225,8 +229,8 @@ class MarkSubOrderShippedView(StoreOwnerRequiredMixin, View):
         from orders.models import SubOrder
 
         sub_order = get_object_or_404(SubOrder, pk=pk, store=self.store)
-        if sub_order.status == SubOrder.STATUS_PAID:
-            sub_order.status = SubOrder.STATUS_SHIPPED
+        if sub_order.status == SubOrder.Status.PAID:
+            sub_order.status = SubOrder.Status.SHIPPED
             sub_order.save(update_fields=["status", "updated_at"])
             messages.success(request, f"SubOrder #{sub_order.id} marked as shipped.")
-        return redirect("stores:orders", store_slug=self.store.slug)
+        return redirect("orders", store_slug=self.store.slug)

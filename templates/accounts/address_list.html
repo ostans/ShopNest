@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}
+  My Addresses | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div>
+        <p class="text-uppercase text-muted small mb-1">Account</p>
+        <h1 class="h2 mb-0">Delivery addresses</h1>
+      </div>
+      <a class="btn btn-dark" href="{% url 'address-create' %}"><i class="bi bi-plus-lg me-2" aria-hidden="true"></i>Add address</a>
+    </div>
+    <div class="list-group">
+      {% for address in addresses %}
+        <article class="list-group-item p-4">
+          <div class="d-flex flex-wrap justify-content-between gap-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <h2 class="h5 mb-0">{{ address.receiver_name }}</h2>
+                {% if address.is_default %}
+                  <span class="badge text-bg-success">Default</span>
+                {% endif %}
+              </div>
+              <p class="mb-1">{{ address.province }}, {{ address.city }}</p>
+              <p class="text-secondary mb-1">{{ address.address_line }}</p>
+              <p class="text-secondary small mb-0">
+                {{ address.receiver_phone }}{% if address.postal_code %}
+                  · Postal code {{ address.postal_code }}
+                {% endif %}
+              </p>
+            </div>
+            <div class="d-flex align-items-start gap-2">
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'address-update' address.pk %}">Edit</a>
+              <a class="btn btn-outline-danger btn-sm" href="{% url 'address-delete' address.pk %}">Delete</a>
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div class="border rounded p-5 text-center">
+          <h2 class="h5">No saved addresses</h2>
+          <p class="text-secondary">Add a delivery address to make checkout quicker.</p>
+          <a class="btn btn-dark" href="{% url 'address-create' %}">Add your first address</a>
+        </div>
+      {% endfor %}
+    </div>
+  </main>
+{% endblock %}

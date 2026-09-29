@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+  Payment for Order #{{ order.pk }} | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <p class="text-uppercase text-muted small mb-1">Order #{{ order.pk }}</p>
+        <h1 class="h2 mb-4">Complete payment</h1>
+        <section class="border rounded p-4 mb-4">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <h2 class="h5">Order total</h2>
+              <p class="text-secondary mb-0">Delivery to {{ order.receiver_name }}, {{ order.city }}</p>
+            </div>
+            <strong class="fs-4">{{ order.total_price }}</strong>
+          </div>
+        </section>
+        <p class="text-secondary">This project uses a simulated payment flow. No real payment method will be charged.</p>
+        <form method="post" action="{% url 'orders:pay' order.pk %}">
+          {% csrf_token %}
+          <button class="btn btn-dark" type="submit">Confirm simulated payment</button>
+          <a class="btn btn-outline-secondary ms-2" href="{% url 'orders:history' %}">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </main>
+{% endblock %}

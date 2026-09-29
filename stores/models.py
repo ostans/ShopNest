@@ -1,16 +1,16 @@
 from autoslug import AutoSlugField
 from django.conf import settings
 from django.db import models
-from products.models import Product
 
 from core.models import BaseModel
+from products.models import Product
 
 
 class Store(BaseModel):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="stores"
     )
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     slug = AutoSlugField(populate_from="name", unique=True, always_update=False)
     description = models.TextField(blank=True, null=True)
     logo = models.ImageField(upload_to="store/logos/", blank=True, null=True)

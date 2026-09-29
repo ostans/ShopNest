@@ -48,14 +48,12 @@ class UserAdmin(ModelAdmin):
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(ModelAdmin):
     ordering = ["-created_at"]
-    list_display = ["user_full_name", "address", "balance"]
+    list_display = ["user_full_name", "user__phone_number"]
     search_fields = [
         "user__phone_number",
         "user__first_name",
         "user__last_name",
-        "address",
     ]
-    list_filter = ["balance"]
 
     @admin.display(description="User")
     def user_full_name(self, obj):
@@ -65,14 +63,16 @@ class CustomerProfileAdmin(ModelAdmin):
 @admin.register(SellerProfile)
 class SellerProfileAdmin(ModelAdmin):
     ordering = ["-created_at"]
-    list_display = ["user_full_name", "national_id", "address", "balance"]
+    list_display = [
+        "user_full_name",
+        "user__phone_number",
+    ]
     search_fields = [
         "user__phone_number",
         "user__first_name",
         "user__last_name",
         "national_id",
     ]
-    list_filter = ["balance"]
 
     @admin.display(description="User")
     def user_full_name(self, obj):

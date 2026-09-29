@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}
+  {% if form.instance.pk %}
+    Edit
+  {% else %}
+    Add
+  {% endif %}Address | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <a class="text-decoration-none" href="{% url 'address-list' %}"><i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back to addresses</a>
+        <h1 class="h2 mt-3 mb-4">
+          {% if form.instance.pk %}
+            Edit address
+          {% else %}
+            Add a delivery address
+          {% endif %}
+        </h1>
+        <form method="post" class="border rounded p-4 p-md-5">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% for field in form %}
+            <div class="mb-3{% if field.field.widget.input_type == 'checkbox' %} form-check{% endif %}">
+              {% if field.field.widget.input_type == 'checkbox' %}
+                {{ field }}
+                <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {% else %}
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+              {% endif %}
+              {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+              {% endif %}
+              {% if field.errors %}
+                <div class="text-danger small">{{ field.errors }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button class="btn btn-dark" type="submit">Save address</button>
+        </form>
+      </div>
+    </div>
+  </main>
+{% endblock %}

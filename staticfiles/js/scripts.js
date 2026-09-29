@@ -5,3 +5,7 @@
 */
 // This file is intentionally blank
 // Use this file to add JavaScript to your project
+const heroCarousel = document.querySelector("#heroCarousel");
+if (heroCarousel && !heroCarousel.querySelector(".carousel-item.active")) {
+	heroCarousel.querySelector(".carousel-item")?.classList.add("active");
+}

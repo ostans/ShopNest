@@ -3,10 +3,10 @@
 {% block content %}
   <section class="container py-4">
     {% if heroes %}
-      <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
+      <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6500" data-bs-pause="hover">
         <div class="carousel-inner rounded-4 shadow-sm">
           {% for hero in heroes %}
-            <div class="carousel-item">
+            <div class="carousel-item{% if forloop.first %} active{% endif %}">
               <div class="hero-banner position-relative">
                 {% if hero.image %}
                   <img class="hero-image" src="{{ hero.image.url }}" alt="" />
@@ -35,7 +35,8 @@
       <div class="bg-dark text-white rounded-4 p-5 shadow-sm">
         <span class="badge text-bg-light px-3 py-2 rounded-pill mb-3">ShopNest</span>
         <h1 class="display-5 fw-bold mb-3">Fresh finds for every day</h1>
-        <p class="lead text-white-50 mb-0">Upgrade your lifestyle with stylish and practical essentials.</p>
+        <p class="lead text-white-50 mb-4">Upgrade your lifestyle with stylish and practical essentials.</p>
+        <a class="btn btn-light fw-semibold" href="#latest-products">Shop latest products</a>
       </div>
     {% endif %}
   </section>
@@ -69,10 +70,10 @@
     </div>
   </section>
 
-  <section class="container pb-5">
+  <section id="latest-products" class="container pb-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="fw-bold mb-0">Latest products</h2>
-      <a href="{% url 'home' %}" class="text-decoration-none fw-semibold">See more</a>
+      <a href="{% url 'search' %}" class="text-decoration-none fw-semibold">Search products</a>
     </div>
 
     <div class="row g-4">
@@ -91,7 +92,7 @@
               {% if product.lowest_price %}
                 <div class="mt-auto fw-bold fs-5">${{ product.lowest_price }}</div>
               {% endif %}
-              <a href="#" class="btn btn-dark mt-3"><i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Add to cart</a>
+              <a href="{% url 'product-detail' product.slug %}" class="btn btn-dark mt-3"><i class="bi bi-shop me-2" aria-hidden="true"></i>View buying options</a>
             </div>
           </div>
         </div>

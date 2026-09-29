@@ -1,0 +1,10 @@
+.git
+.env
+.env.*.local
+.venv
+venv
+__pycache__
+*.py[cod]
+staticfiles
+.coverage
+.pytest_cache

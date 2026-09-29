@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}
+  Store details | {{ site_name }}
+{% endblock %}
+{% block content %}
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <p class="text-uppercase text-muted small mb-1">Seller tools</p>
+        <h1 class="h2 mb-2">Store details</h1>
+        <p class="text-secondary mb-4">Add your store name, description, and logo.</p>
+        <form method="post" enctype="multipart/form-data" class="border rounded p-4 p-md-5">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+              {% endif %}
+              {% if field.errors %}
+                <div class="text-danger small">{{ field.errors }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button class="btn btn-dark" type="submit">Save store</button>
+        </form>
+      </div>
+    </div>
+  </main>
+{% endblock %}

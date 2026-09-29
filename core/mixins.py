@@ -33,4 +33,4 @@ class StoreOwnerRequiredMixin(SellerRequiredMixin):
     def test_func(self):
         if not super().test_func():
             return False
-        return self.store.owner.user_id == self.request.user.id
+        return self.store.owner_id == self.request.user.id

@@ -20,9 +20,9 @@ class CheckoutView(LoginRequiredMixin, View):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         if not cart.items.exists():
             messages.info(request, "Your cart is empty.")
-            return redirect("cart:detail")
+            return redirect("cart-detail")
 
-        addresses = request.user.addresses.all()
+        addresses = request.user.addresses.all().order_by("-is_default", "id")
         return render(
             request,
             self.template_name,
@@ -37,7 +37,7 @@ class CheckoutView(LoginRequiredMixin, View):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         if not cart.items.exists():
             messages.info(request, "Your cart is empty.")
-            return redirect("cart:detail")
+            return redirect("cart-detail")
 
         address = get_object_or_404(
             Address, pk=request.POST.get("address_id"), user=request.user
@@ -45,9 +45,9 @@ class CheckoutView(LoginRequiredMixin, View):
 
         try:
             order = self._place_order(request.user, address, cart)
-        except InsufficientStockError as exc:
+        except ValueError as exc:
             messages.error(request, str(exc))
-            return redirect("cart:detail")
+            return redirect("cart-detail")
 
         return redirect("orders:pay", pk=order.pk)
 
@@ -75,14 +75,14 @@ class CheckoutView(LoginRequiredMixin, View):
 
                 listing = Listing.objects.select_for_update().get(pk=item.listing_id)
                 if listing.stock_quantity < item.quantity:
-                    raise InsufficientStockError(
+                    raise ValueError(
                         f"Not enough stock for {listing.product.name} (only {listing.stock_quantity} left)."
                     )
 
                 OrderItem.objects.create(
                     sub_order=sub_order,
                     listing=listing,
-                    product_name_snapshot=listing.product.name,
+                    product=listing.product,
                     price_snapshot=listing.price,
                     quantity=item.quantity,
                 )
@@ -113,7 +113,7 @@ class PayOrderView(LoginRequiredMixin, View):
         order = get_object_or_404(Order, pk=pk, buyer=request.user)
         self._process_fake_payment(order)
         messages.success(request, "Payment successful! Your order is being processed.")
-        return redirect("order-detail", pk=order.pk)
+        return redirect("orders:order-detail", pk=order.pk)
 
     @staticmethod
     @transaction.atomic
@@ -126,7 +126,7 @@ class PayOrderView(LoginRequiredMixin, View):
             order=order,
             defaults={"amount": order.total_price},
         )
-        payment.status = Payment.STATUS_SUCCESS
+        payment.status = Payment.Status.SUCCESS
         payment.reference = f"FAKE-{order.id}-{int(timezone.now().timestamp())}"
         payment.paid_at = timezone.now()
         payment.save()
@@ -166,4 +166,4 @@ class MarkSubOrderReceivedView(LoginRequiredMixin, View):
             messages.success(
                 request, "Thanks for confirming! The order is marked as completed."
             )
-        return redirect("order-detail", pk=sub_order.order_id)
+        return redirect("orders:order-detail", pk=sub_order.order_id)

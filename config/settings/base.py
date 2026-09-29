@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "products",
     "stores",
     "orders",
+    "cart",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -84,6 +86,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {}
 AUTH_USER_MODEL = "accounts.User"
+LOGIN_URL = "login"
 
 
 # Password validation

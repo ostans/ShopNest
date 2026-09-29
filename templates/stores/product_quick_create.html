@@ -1,28 +1,31 @@
 {% extends 'base.html' %}
-{% block title %}New Product - {{ site_name }}{% endblock %}
+{% block title %}
+  New Product - {{ site_name }}
+{% endblock %}
 {% block content %}
-<div class="container py-5">
-    <p><a href="{% url 'stores:listing-search' store.slug %}">&larr; Back to search</a></p>
+  <div class="container py-5">
+    <p>
+      <a href="{% url 'listing-search' store.slug %}">&larr; Back to search</a>
+    </p>
     <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <h2 class="mb-2">Add a new product</h2>
-            <p class="text-muted" style="font-size:14px;">
-                This will be submitted for admin review before it appears in the public catalog.
-                You can set your price for it right after.
-            </p>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.non_field_errors }}
-                {% for field in form %}
-                    <div class="mb-3">
-                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.errors %}<div class="text-danger" style="font-size:13px;">{{ field.errors }}</div>{% endif %}
-                    </div>
-                {% endfor %}
-                <button type="submit" class="btn btn-primary rounded-pill px-4">Continue</button>
-            </form>
-        </div>
+      <div class="col-lg-6">
+        <h2 class="mb-2">Add a new product</h2>
+        <p class="text-muted" style="font-size:14px;">This will be submitted for admin review before it appears in the public catalog. You can set your price for it right after.</p>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger" style="font-size:13px;">{{ field.errors }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary rounded-pill px-4">Continue</button>
+        </form>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}
